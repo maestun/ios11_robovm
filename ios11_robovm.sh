@@ -17,19 +17,17 @@ MAIN_CLASS="MyLibGDXGame"
 ANDROID_SDK_LOCATION=~/dev/android/sdk
 # end edit
 
-
-APP_NAME_XCODE=$APP_NAME-xcode
 APP_FOLDER_XCODE=$APP_FOLDER-xcode
 
 
 echo "*************************"
-echo "*** installing Homebrew *"
+echo "*** Installing Homebrew *"
 echo "*************************"
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 
 echo "*****************************"
-echo "*** installing dependencies *"
+echo "*** Installing dependencies *"
 echo "*****************************"
 brew install gnutls libgcrypt curl git cocoapods usbmuxd automake libtool libzip pkg-config
 brew cask install java
@@ -90,7 +88,7 @@ cd ..
 
 
 echo "******************************"
-echo "*** android: accept licenses *"
+echo "*** Android: accept licenses *"
 echo "******************************"
 sh $ANDROID_SDK_LOCATION/tools/bin/sdkmanager --licenses
 
@@ -104,17 +102,26 @@ java -jar gdx-setup.jar --dir $APP_FOLDER --name $APP_NAME --package $BUNDLE_ID 
 
 echo "*************************************************************************"
 echo "*** Please create a dummy Xcode project named --->"$APP_FOLDER_XCODE"<--- with bundleID --->"$BUNDLE_ID"<---"
-echo "*** The app should be signed with a distribution certificate, then deployed on the device."
-echo "*** You should the resulting product ("APP_FOLDER_XCODE".app) file into "APP_FOLDER_XCODE".ipa thru the Payload folder,"
-echo "*** then try to install it on your iOS 11 device with ideviceinstaller."
+echo "*** The app should be signed with a distribution certificate, then try to run it on the device."
+echo "*** In Xcode, right click on "$APP_FOLDER_XCODE".app (under 'Products'), show in Finder, then copy it into" $(pwd)
 echo "*************************************************************************"
-read -p "Press any key when done."
+read -p "Press any key when ready."
 
 
-echo "********************************************************************************"
-echo "*** Please import your gradle project into eclipse, configure ios app then run *"
-echo "********************************************************************************"
-read -p "Press any key when done."
+echo "****************************************************************"
+echo "*** Packaging Xcode app / try to install thru ideviceinstaller *"
+echo "****************************************************************"
+mkdir Payload
+cp -r $APP_FOLDER_XCODE.app ./Payload
+zip -r $APP_FOLDER_XCODE.ipa ./Payload/
+ideviceinstaller -i $APP_FOLDER_XCODE.ipa
+read -p "Press any key to continue."
+
+
+# echo "********************************************************************************"
+# echo "*** Please import your gradle project into eclipse, configure ios app then run *"
+# echo "********************************************************************************"
+# read -p "Press any key when done."
 
 # in ios/build.gradle file, modify "robovm" section:
 # robovm {
@@ -124,10 +131,11 @@ read -p "Press any key when done."
 # }
 
 echo "*************************************"
-echo "*** building libgdx app with gradle *"
+echo "*** Building libgdx app with gradle *"
 echo "*************************************"
-./$APP_FOLDER/gradlew ios:createIPA --info
-
+cd $APP_FOLDER
+./gradlew ios:createIPA --info
+read -p "Press any key to continue."
 
 # echo "************************"
 # echo "*** signing libgdx app *"
@@ -154,8 +162,8 @@ echo "*************************************"
 echo "*************************************"
 echo "*** installing libgdx app on device *"
 echo "*************************************"
-ideviceinstaller -i $APP_FOLDER/ios/build/robovm/IOSLauncher.ipa
-
+ideviceinstaller -i ios/build/robovm/IOSLauncher.ipa
+cd ..
 
 echo "***********"
 echo "*** done. *"
