@@ -1,6 +1,15 @@
 #!/bin/sh
 
-# edit this
+# -------------
+# Prerequisites
+# -------------
+# Android SDK
+# Xcode 9 beta
+# Eclipse for Android
+
+# ----------
+# Edit these
+# -------------
 APP_NAME="MyLibGDXGame"
 APP_FOLDER="mylibgdxgame"
 BUNDLE_ID="com.maestun.mylibgdxgame"
@@ -24,7 +33,6 @@ echo "*** installing dependencies *"
 echo "*****************************"
 brew install gnutls libgcrypt curl git cocoapods usbmuxd automake libtool libzip pkg-config
 brew cask install java
-# export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 
 echo "***********************************************"
@@ -94,10 +102,12 @@ curl -O https://libgdx.badlogicgames.com/nightlies/dist/gdx-setup.jar
 java -jar gdx-setup.jar --dir $APP_FOLDER --name $APP_NAME --package $BUNDLE_ID --mainClass $MAIN_CLASS --sdkLocation $ANDROID_SDK_LOCATION
 
 
-echo "********************************************************************************************************************************"
-echo "*** Please create fake Xcode project named --->"$APP_FOLDER_XCODE"<--- with bundleID --->"$BUNDLE_ID"<--- , then deploy on device."
-echo "*** Then convert the resulting product ("APP_FOLDER_XCODE".app) file into "APP_FOLDER_XCODE".ipa thru the Payload folder."
-echo "********************************************************************************************************************************"
+echo "*************************************************************************"
+echo "*** Please create a dummy Xcode project named --->"$APP_FOLDER_XCODE"<--- with bundleID --->"$BUNDLE_ID"<---"
+echo "*** The app should be signed with a distribution certificate, then deployed on the device."
+echo "*** You should the resulting product ("APP_FOLDER_XCODE".app) file into "APP_FOLDER_XCODE".ipa thru the Payload folder,"
+echo "*** then try to install it on your iOS 11 device with ideviceinstaller."
+echo "*************************************************************************"
 read -p "Press any key when done."
 
 
@@ -116,29 +126,29 @@ read -p "Press any key when done."
 echo "*************************************"
 echo "*** building libgdx app with gradle *"
 echo "*************************************"
-./$APP_FOLDER/gradlew ios:createIPA
+./$APP_FOLDER/gradlew ios:createIPA --info
 
 
-echo "************************"
-echo "*** signing libgdx app *"
-echo "************************"
-codesign -f -s A6B05506E31885C820E6E4587151A550E88F9801 --entitlements /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/Entitlements.plist /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/IOSLauncher.app
+# echo "************************"
+# echo "*** signing libgdx app *"
+# echo "************************"
+# codesign -f -s A6B05506E31885C820E6E4587151A550E88F9801 --entitlements /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/Entitlements.plist /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/IOSLauncher.app
 
 
-echo "***********************************"
-echo "*** checking libgdx app signature *"
-echo "***********************************"
-codesign -dvvv /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/IOSLauncher.app
+# echo "***********************************"
+# echo "*** checking libgdx app signature *"
+# echo "***********************************"
+# codesign -dvvv /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/IOSLauncher.app
 
 
-echo "**************************************"
-echo "*** packaging libgdx app for install *"
-echo "**************************************"
-mkdir Payload
-cp -r /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/IOSLauncher.app ./Payload/IOSLauncher.app
-zip ./Payload/IOSLauncher.app
-mv ./Payload/IOSLauncher.zip ./IOSLauncher.ipa
-rm -r ./Payload
+# echo "**************************************"
+# echo "*** packaging libgdx app for install *"
+# echo "**************************************"
+# mkdir Payload
+# cp -r /Users/tisseodev/dev/eclipse/workspace/.metadata/.plugins/org.robovm.eclipse.ui/build/maestun-game-ios/maestun-game-ios/ios/arm64/IOSLauncher.app ./Payload/IOSLauncher.app
+# zip ./Payload/IOSLauncher.app
+# mv ./Payload/IOSLauncher.zip ./IOSLauncher.ipa
+# rm -r ./Payload
 
 
 echo "*************************************"
